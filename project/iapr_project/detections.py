@@ -8,7 +8,7 @@ Object detection functions
 import cv2
 import numpy as np
 
-from utilities import compute_angle, imshow, mask_image, preprocess
+from utilities import compute_angle, compute_elongation, imshow, mask_image, preprocess
 
 
 def find_red_arrow(image, show=False):
@@ -35,8 +35,9 @@ def find_red_arrow(image, show=False):
         M = cv2.moments(c)
 
         area = M['m00']
+        elongation = compute_elongation(M)
         # these will not be the arrow (too small or too big)
-        if area < 1000 or area > 10000: continue
+        if area < 1000 or area > 10000 or elongation > 100: continue
 
         cX = int(M['m10'] / area)
         cY = int(M['m01'] / area)
@@ -100,12 +101,6 @@ def find_math_elements(image, arrow_c, bound=20, show=False):
         list: Images of all math elements.
         list: Center coordinates of math elements.
     """
-    def elongation(m):
-        """Compute elongation given the moments."""
-        x = m['mu20'] + m['mu02']
-        y = 4 * m['mu11']**2 + (m['mu20'] - m['mu02'])**2
-        return (x + y**0.5) / (x - y**0.5)
-
     image_original = image.copy()
     image_copy = image.copy()
 
@@ -129,9 +124,9 @@ def find_math_elements(image, arrow_c, bound=20, show=False):
         M = cv2.moments(c)
 
         area = M['m00']
-        elongation_ = elongation(M)
+        elongation = compute_elongation(M)
         # these are either too small or too big or too elongated
-        if area < 40 or area > 400 or elongation_ > 3000: continue
+        if area < 40 or area > 400 or elongation > 3000: continue
 
         cY = int(M['m01'] / M['m00'])
         cX = int(M['m10'] / M['m00'])

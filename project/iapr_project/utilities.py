@@ -28,6 +28,19 @@ def compute_angle(a, b, c):
     return ang + 360 if ang < 0 else ang
 
 
+def compute_elongation(m):
+    """Compute elongation given the moments.
+
+    Args:
+        m: Moments.
+    Return:
+        float: elongation.
+    """
+    x = m['mu20'] + m['mu02']
+    y = 4 * m['mu11'] ** 2 + (m['mu20'] - m['mu02']) ** 2
+    return (x + y ** 0.5) / (x - y ** 0.5)
+
+
 def parse_equation(equations):
     """Parse the classification results.
 
