@@ -1,2 +1,5 @@
 .ipynb_checkpoints/
+.vscode/
 data/*/
+
+.python-version
